@@ -1,0 +1,934 @@
+{
+  "name": "Product-post",
+  "nodes": [
+    {
+      "parameters": {
+        "httpRequestMethod": "POST",
+        "graphApiVersion": "v22.0",
+        "node": "={{ $json.node }}",
+        "edge": "media",
+        "options": {
+          "queryParameters": {
+            "parameter": [
+              {
+                "name": "caption",
+                "value": "={{ $('Publishing Agent').item.json.output.instagram.description }}"
+              },
+              {
+                "name": "image_url",
+                "value": "={{ $json['image url'] }}"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.facebookGraphApi",
+      "typeVersion": 1,
+      "position": [
+        -480,
+        20
+      ],
+      "id": "c95698d3-cb43-427d-b989-f6aa9adefdd8",
+      "name": "Create Container"
+    },
+    {
+      "parameters": {
+        "httpRequestMethod": "POST",
+        "graphApiVersion": "v22.0",
+        "node": "={{ $('Edit Fields').item.json.node }}",
+        "edge": "media_publish",
+        "options": {
+          "queryParameters": {
+            "parameter": [
+              {
+                "name": "creation_id",
+                "value": "={{ $json.id }}"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.facebookGraphApi",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "7efee6b5-cf87-4691-a9ad-699beb20a829",
+      "name": "Instagram POST"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=HERE IS THE CAPTION, strictly output in json in system propmt {{ $json.text }}",
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": [
+            {
+              "type": "=SystemMessagePromptTemplate",
+              "message": "= **style_tone**: A string indicating the desired voice/persona for the content.\n\n---\n\n### Platform-specific output requirements:\n\n1. **Instagram.  \n   - Description: Visual, personal, and aesthetic. Use storytelling to connect with the user's lifestyle aspirations. The tone is elegant and inspiring, using emojis to add warmth and personality.\nRecommended Length:70-150 words\n\n3. **X.com**:   \n   - Description: Direct, witty, and informative. The goal is to grab attention quickly in a fast-moving feed. The tone is confident and conversational.\n   Recommended Length: 280 characters\n\n4. **Linkedin**:  \n   - Description: Value-driven and educational. The tone is more formal, focusing on the science, business, and ingredient sourcing behind the brand to build credibility.\n     Recommended Length: 70-150 words\n\n---\n\n### Output format:\n\nReturn strictly this JSON structure, adapting content tone according to `style_tone`:\n\n{\n  \"instagram\": {\n    \"description\": \"...\"\n  },\n  \"x.com\": {\n    \"description\": \"...\"\n  },\n  \"linkedin\": {\n    \"description\": \"...\"\n  }\n}\n\n#Note \n- Return only the EXACT JSON Output and nothing else."
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [
+        -1560,
+        500
+      ],
+      "id": "a409836f-05e5-425d-b7b2-998715659e56",
+      "name": "Publishing Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        -1720,
+        740
+      ],
+      "id": "2c31f51a-1178-4804-a706-f0310cdbe480",
+      "name": "gpt4o mini"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"instagram\": {\n    \"description\": \"...\"\n  },\n  \"x.com\": {\n    \"description\": \"...\"\n  },\n  \"linkedin\": {\n    \"description\": \"...\"\n  }\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        -1240,
+        740
+      ],
+      "id": "cc4af9f6-b6b6-4df5-a9d6-c1b599b8d922",
+      "name": "Structured Output Parser5"
+    },
+    {
+      "parameters": {
+        "amount": 20
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -240,
+        280
+      ],
+      "id": "44e49175-96bb-4329-bd6f-fb9586a65fe3",
+      "name": "Wait4",
+      "webhookId": "d3016a86-f0c3-4edc-bd14-ebb7d987d62f"
+    },
+    {
+      "parameters": {
+        "text": "={{ $('Publishing Agent').item.json.output['x.com'].description }}",
+        "additionalFields": {
+          "attachments": "={{ $json.media_id_string }}"
+        }
+      },
+      "type": "n8n-nodes-base.twitter",
+      "typeVersion": 2,
+      "position": [
+        -240,
+        500
+      ],
+      "id": "0845fe0a-4a53-498c-8111-7258767c181a",
+      "name": "X"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f4d8d044-c59c-4742-92e3-337feebfefe1",
+              "name": "image url",
+              "value": "=https://storage.googleapis.com/{{ $json.bucket }}/{{ $json.name }}",
+              "type": "string"
+            },
+            {
+              "id": "52cde769-906c-475f-b3fb-32c88fc09da0",
+              "name": "caption",
+              "value": "={{ $json.output.instagram.description }}",
+              "type": "string"
+            },
+            {
+              "id": "5825bd4c-7ebe-48e6-865b-34318e49f8ad",
+              "name": "node",
+              "value": "17841470359168338",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -700,
+        260
+      ],
+      "id": "0f74a1a9-7494-4dc7-a59a-6c644f66297f",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://upload.twitter.com/1.1/media/upload.json",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "oAuth1Api",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "media",
+              "inputDataFieldName": "data"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -700,
+        500
+      ],
+      "id": "e84416e6-42f7-4904-a0af-da4947c481dc",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "postAs": "organization",
+        "organization": "107468712",
+        "text": "={{ $('Publishing Agent').item.json.output.linkedin.description }}",
+        "shareMediaCategory": "IMAGE",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.linkedIn",
+      "typeVersion": 1,
+      "position": [
+        -960,
+        760
+      ],
+      "id": "5760c08e-2dd5-4572-bd88-d24bc8712cde",
+      "name": "LinkedIn"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Write post caption system prompt, write based on current trend you combain with brand and product for caption. caption STRICTLY ABOUT BRAND AND PRODUCT unique: here is the details of image poster for refrence: {{ $('Clean AI Prompt').item.json.cleanedPrompt }}",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "You are HASKYN's AI Social Media Content Creator. Your task is to generate one new, unique social media caption based on the comprehensive brand system detailed in this paragraph. Your core focus is the HASKYN brand, a proud Canadian company built on the principle of natural luxury. The singular product is the HASKYN Goat Milk x Kojic Acid Cold Press Soap, a solid bar formulated to be a one-stop solution for achieving a radiant, even skin tone and removing tan and dark spots. Every caption must reflect the product's premium ingredients, including 7.00% Goat Milk, 1.60% Kojic Acid, and a rich base of natural oils like Olive Oil (19.80%) and Coconut Oil (19.80%), all while embodying the aspirational marketing angle of being \"Hollywood's Best-Kept Secret\".  Your generated caption must adhere strictly to the rules of one of the following platforms:  For Instagram: Write a caption with a hook under 125 characters, a main body of 50-150 words for storytelling, a clear call to action, and 5-15 relevant hashtags. For X (Twitter): Write a concise caption between 70-140 characters, including a punchy fact, a direct link, and 1-3 hashtags. For LinkedIn: Write a professional mini-article with a hook under 210 characters, a main body of 100-250 words demonstrating industry expertise, a question to drive discussion, and 3-5 professional hashtags. Now, randomly select one platform (Instagram, X, or LinkedIn) and one content pillar (Ingredient Spotlight, Benefit-Driven, Aspirational Lifestyle, or Brand Story), then generate a new, complete caption. State which platform and pillar you chose before presenting the caption."
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        -1960,
+        500
+      ],
+      "id": "56bdaf78-78d7-4d52-a23b-17ac47c75235",
+      "name": "Basic LLM Chain",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-flash-preview-05-20",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -2080,
+        700
+      ],
+      "id": "8bd43ba1-a35c-4beb-a6cd-89fe0a379f49",
+      "name": "Google Gemini Chat Model"
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('Google Drive25').item.json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -1200,
+        500
+      ],
+      "id": "a9c7c97a-8e25-4c7a-805d-d96ed49b1010",
+      "name": "Google Drive2"
+    },
+    {
+      "parameters": {
+        "resource": "object",
+        "operation": "create",
+        "bucketName": "auto-post-img",
+        "objectName": "output_gpt/image",
+        "createData": {},
+        "createQuery": {},
+        "encryptionHeaders": {},
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-base.googleCloudStorage",
+      "typeVersion": 1,
+      "position": [
+        -940,
+        40
+      ],
+      "id": "05d1b375-642a-4f12-aecf-ac72e455be0c",
+      "name": "Google Cloud Storage",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "name": "output_img",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "={{ $('Google Drive').item.json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -2220,
+        500
+      ],
+      "id": "98cfe440-dbac-4d19-b842-5b397eb8c4dc",
+      "name": "Google Drive25"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get the input from Random Style Selector\nconst inputData = $input.first().json;\n\n// Clean and escape the selected prompt style for JSON compatibility\nlet cleanedPromptStyle = inputData.selectedPromptStyle;\n\nif (cleanedPromptStyle) {\n  // Replace literal line breaks with \\n escape sequence\n  cleanedPromptStyle = cleanedPromptStyle\n    .replace(/\\r\\n/g, '\\\\n')  // Windows line breaks\n    .replace(/\\n/g, '\\\\n')    // Unix line breaks\n    .replace(/\\r/g, '\\\\n')    // Mac line breaks\n    .replace(/\"/g, '\\\\\"')     // Escape double quotes\n    .replace(/\\\\/g, '\\\\\\\\')   // Escape backslashes\n    .replace(/\\t/g, '\\\\t')    // Escape tabs\n    .replace(/\\f/g, '\\\\f')    // Escape form feeds\n    .trim();                  // Remove leading/trailing whitespace\n}\n\n// Also clean the available styles array\nconst cleanedAvailableStyles = inputData.availableStyles.map(style => {\n  return style\n    .replace(/\\r\\n/g, '\\\\n')\n    .replace(/\\n/g, '\\\\n')\n    .replace(/\\r/g, '\\\\n')\n    .replace(/\"/g, '\\\\\"')\n    .replace(/\\\\/g, '\\\\\\\\')\n    .replace(/\\t/g, '\\\\t')\n    .replace(/\\f/g, '\\\\f')\n    .trim();\n});\n\nconsole.log('Original prompt preview:', inputData.selectedPromptStyle.substring(0, 100));\nconsole.log('Cleaned prompt preview:', cleanedPromptStyle.substring(0, 100));\n\n// Return the cleaned data\nreturn [{\n  json: {\n    selectedPromptStyle: cleanedPromptStyle,\n    availableStyles: cleanedAvailableStyles,\n    selectedIndex: inputData.selectedIndex,\n    totalStyles: inputData.totalStyles,\n    executionId: inputData.executionId,\n    timestamp: inputData.timestamp,\n    stylePreview: cleanedPromptStyle.substring(0, 100) + '...',\n    debugInfo: {\n      ...inputData.debugInfo,\n      isJsonCleaned: true,\n      originalLength: inputData.selectedPromptStyle.length,\n      cleanedLength: cleanedPromptStyle.length\n    }\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -180,
+        1120
+      ],
+      "id": "abc4def0-810e-469c-a210-ed7b9475e98a",
+      "name": "JSON Prompt Cleaner"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get ALL input items, not just the first one\nconst allInputs = $input.all();\nconsole.log('Total input items received:', allInputs.length);\n\nconst promptStyles = [];\n\n// Process ALL items from Google Sheets\nallInputs.forEach((inputItem, itemIndex) => {\n  console.log(`Processing input item ${itemIndex}:`, JSON.stringify(inputItem.json, null, 2));\n  \n  const row = inputItem.json;\n  \n  // Check if this row has a valid Prompt STYLE\n  if (row['Prompt STYLE'] && row['Prompt STYLE'].trim() !== '') {\n    let cleanStyle = row['Prompt STYLE']\n      .replace(/\"/g, \"'\")\n      .replace(/\\\\/g, '')\n      .trim();\n    \n    if (cleanStyle.length > 0) {\n      promptStyles.push(cleanStyle);\n      console.log(`Added style ${promptStyles.length} from row ${row.row_number || itemIndex}:`, cleanStyle.substring(0, 50) + '...');\n    }\n  }\n});\n\nconsole.log(`Total styles collected: ${promptStyles.length}`);\n\nif (promptStyles.length === 0) {\n  throw new Error('No valid prompt styles found in Google Sheets. Check data structure and column names.');\n}\n\n// Select random style\nconst randomIndex = Math.floor(Math.random() * promptStyles.length);\nconst selectedStyle = promptStyles[randomIndex];\n\nconsole.log(`Selected index: ${randomIndex} out of ${promptStyles.length} styles`);\nconsole.log(`Selected style: ${selectedStyle.substring(0, 100)}...`);\n\nconst currentTime = new Date().toISOString();\nconst executionId = Math.random().toString(36).substring(2, 15);\n\nreturn [{\n  json: {\n    selectedPromptStyle: selectedStyle,\n    availableStyles: promptStyles,\n    selectedIndex: randomIndex,\n    totalStyles: promptStyles.length,\n    executionId: executionId,\n    timestamp: currentTime,\n    stylePreview: selectedStyle.substring(0, 100) + '...',\n    debugInfo: {\n      totalInputItems: allInputs.length,\n      processedRows: promptStyles.length\n    }\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -300,
+        1460
+      ],
+      "id": "07ad8280-9974-48c8-a267-d64185642c5b",
+      "name": "Random Style Selector"
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "filter": {
+          "driveId": {
+            "__rl": true,
+            "value": "My Drive",
+            "mode": "list",
+            "cachedResultName": "My Drive",
+            "cachedResultUrl": "https://drive.google.com/drive/my-drive"
+          },
+          "folderId": {
+            "__rl": true,
+            "value": "1EcAMakz15DqJbzrLtzTUS3XFKddYbvzu",
+            "mode": "list",
+            "cachedResultName": "just product",
+            "cachedResultUrl": "https://drive.google.com/drive/folders/1EcAMakz15DqJbzrLtzTUS3XFKddYbvzu"
+          }
+        },
+        "options": {
+          "fields": [
+            "name",
+            "id",
+            "webViewLink",
+            "webContentLink",
+            "mimeType"
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -1780,
+        1120
+      ],
+      "id": "b96dd216-3e7f-43e4-a573-68abc6ab5525",
+      "name": "Get Source Images"
+    },
+    {
+      "parameters": {
+        "resource": "folder",
+        "name": "output_img",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "11-d0BbNXOA1lLta7ZLxfct5r1ryrJlQY",
+          "mode": "list",
+          "cachedResultName": "Ads",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/11-d0BbNXOA1lLta7ZLxfct5r1ryrJlQY"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -420,
+        1120
+      ],
+      "id": "afad626e-8fdd-4c3d-bfd0-c2cdb7db2e71",
+      "name": "Google Drive"
+    },
+    {
+      "parameters": {
+        "resource": "folder",
+        "operation": "share",
+        "folderNoRootId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "permissionsUi": {
+          "permissionsValues": {
+            "role": "reader",
+            "type": "anyone"
+          }
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -760,
+        1120
+      ],
+      "id": "cc7da91c-d8da-42fe-9b31-7754ff3a8067",
+      "name": "Google Drive24"
+    },
+    {
+      "parameters": {
+        "jsCode": "const aiResponse = $input.all()[0].json;\nlet cleanPrompt = aiResponse.choices[0].message.content;\n\ncleanPrompt = cleanPrompt\n  .replace(/\"/g, '')\n  .replace(/\\n/g, ' ')\n  .replace(/\\r/g, '')\n  .replace(/\\s+/g, ' ')\n  .trim();\n\nreturn [{\n  json: {\n    choices: [{\n      message: {\n        content: cleanPrompt\n      }\n    }],\n    cleanedPrompt: cleanPrompt,\n    originalPrompt: aiResponse.choices[0].message.content\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1500,
+        1120
+      ],
+      "id": "a9740b29-76b2-45a7-904b-da71f7026d38",
+      "name": "Clean AI Prompt"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://openrouter.ai/api/v1/chat/completions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"google/gemini-2.5-flash-preview-05-20\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are an expert image analyst and prompt engineer. Analyze the provided image and generate a creative, high-fidelity prompt using the Master Prompt System. The output must follow a structured, prominent prompt style format with all key visual components embedded. Do not describe the product — the exact product image is already provided to the image editor. CORE LOGIC: The final style—either 3D render or supermodel iPhone-style photography—must be determined by the user's prompt style. Do not force one format. Instead, match the rendering method (realistic sudio 3D or photoshopped photography rich texture, To what the scene requires. If the prompt includes surreal or suspended elements, default to dreamy hyperrealistic 3D render. If the prompt features hands, skin, or lifestyle use, default to soft natural-light iPhone-style supermodel photography. Always apply elegant, intentional lighting, sculptural shadowing, and brand-consistent materials. Brand palette enforcement is essential: pale cream or off-white and olive green velvet must be present visually and prominently in each scene (textile, surface, light bounce, backdrop, or prop). descriptive language for texture, light, surface, and imperfection.STRICTLY, NO TExt in product like brand name, only in cornores\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": [\n        {\n          \"type\": \"text\",\n          \"text\": \"Analyze this image and create a creative prompt using prompt style: {{ $('JSON Prompt Cleaner').item.json.selectedPromptStyle }}. STRICTLY MAINTAIN Product color of the product, STRICTLY ONLY OUTPUT THE PROMPT, no conversation.NO TExt in product like brand name, only branding name on side ,HASKYN,in coneres.\"\n        },\n        {\n          \"type\": \"image_url\",\n          \"image_url\": {\n            \"url\": \"{{ $json.webContentLink }}\"\n          }\n        }\n      ]\n    }\n  ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1260,
+        1120
+      ],
+      "id": "534ed5ee-68b4-48ee-9c05-f9cb23be6d60",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "data[0].b64_json",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        -2460,
+        500
+      ],
+      "id": "fea56b45-d1cf-4cf5-bbfc-ef903a2818e0",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('Get Source Images').item.json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -2020,
+        1120
+      ],
+      "id": "4869a6bf-97f9-48bd-b5c0-8c1a047f9154",
+      "name": "Google Drive26"
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "filter": {
+          "folderId": {
+            "__rl": true,
+            "value": "1UyZBZ7qY6kYuovWwpulwbUct4FsWZwgV",
+            "mode": "list",
+            "cachedResultName": "JUST PRODUCT",
+            "cachedResultUrl": "https://drive.google.com/drive/folders/1UyZBZ7qY6kYuovWwpulwbUct4FsWZwgV"
+          }
+        },
+        "options": {
+          "fields": [
+            "name",
+            "id",
+            "webViewLink",
+            "webContentLink",
+            "mimeType"
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -1020,
+        1120
+      ],
+      "id": "ec350597-2be4-4281-b20f-d2449e32a9d6",
+      "name": "Get Source Images8"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/images/edits",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer <your-api-key>"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "image",
+              "inputDataFieldName": "=data"
+            },
+            {
+              "name": "prompt",
+              "value": "=STRICTLY use orginal  Product in the image, dont chage the color or detail , {{ $('Clean AI Prompt').item.json.cleanedPrompt }}, STRICTLY, NO TEXT in product, only brand name HASKYN in Cornor logo."
+            },
+            {
+              "name": "model",
+              "value": "gpt-image-1"
+            },
+            {
+              "name": "quality",
+              "value": "medium"
+            },
+            {
+              "name": "size",
+              "value": "1024x1024"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -2320,
+        1120
+      ],
+      "id": "a9eb154b-11a2-4d8d-9fc4-ad50e44c8515",
+      "name": "HTTP Request14"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1UKUIlxoOuY0JOGGgwhkSWsfOH-OeYYrWiKizKAWenQE",
+          "mode": "list",
+          "cachedResultName": "Prompt system",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1UKUIlxoOuY0JOGGgwhkSWsfOH-OeYYrWiKizKAWenQE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1UKUIlxoOuY0JOGGgwhkSWsfOH-OeYYrWiKizKAWenQE/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -520,
+        1460
+      ],
+      "id": "330ec686-d1ca-4502-ba27-d46950057837",
+      "name": "Google Sheets1",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "path": "425f75d0-c18b-4e8d-a906-33ec451bfb95",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -780,
+        1460
+      ],
+      "id": "054eaaf5-87ea-4f61-b3cb-534f282163f8",
+      "name": "Webhook",
+      "webhookId": "425f75d0-c18b-4e8d-a906-33ec451bfb95"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Create Container": {
+      "main": [
+        [
+          {
+            "node": "Wait4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Publishing Agent": {
+      "main": [
+        [
+          {
+            "node": "Google Drive2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "gpt4o mini": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Publishing Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser5": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Publishing Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait4": {
+      "main": [
+        [
+          {
+            "node": "Instagram POST",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Create Container",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "X",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Publishing Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Drive2": {
+      "main": [
+        [
+          {
+            "node": "LinkedIn",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Google Cloud Storage",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Cloud Storage": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Drive25": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "JSON Prompt Cleaner": {
+      "main": [
+        [
+          {
+            "node": "Google Drive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Random Style Selector": {
+      "main": [
+        [
+          {
+            "node": "JSON Prompt Cleaner",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Source Images": {
+      "main": [
+        [
+          {
+            "node": "Google Drive26",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Drive": {
+      "main": [
+        [
+          {
+            "node": "Google Drive24",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Drive24": {
+      "main": [
+        [
+          {
+            "node": "Get Source Images8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clean AI Prompt": {
+      "main": [
+        [
+          {
+            "node": "Get Source Images",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Clean AI Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Drive26": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request14",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Source Images8": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request14": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets1": {
+      "main": [
+        [
+          {
+            "node": "Random Style Selector",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "Google Drive25",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "21a6f926-6439-4b2e-be8e-64a1bcb98acb",
+  "meta": {
+    "instanceId": "8ce7f4a583d9b5056cbb17c48e1cf5e62ab21ae47a58a364189ccdf5015f6a78"
+  },
+  "id": "DBwG7ugRyoYB6TcE",
+  "tags": []
+}

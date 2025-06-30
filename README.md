@@ -79,6 +79,6 @@ For custom front‑end hooks or authentication layers, wrap the POST call in you
 
 For questions, customizations, or integration help:
 
-* **Email**: [support@haskyn.com](mailto:basalelr@gmail.com
+* **Email**: [basalelr@gmail.com](mailto:basalelr@gmail.com
 )
 

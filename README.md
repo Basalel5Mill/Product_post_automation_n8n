@@ -3,15 +3,17 @@
 This n8n workflow automates cross‑platform social media publishing for HASKYN’s Product Post. It generates tailored captions, uploads images, and publishes to Instagram, X (formerly Twitter), and LinkedIn — all in one seamless process.
 
 ---
-
+<p align="center">
+  <img src="https://primary-production-2548.up.railway.app/wp-content/uploads/2025/07/n8n-blog.png" alt="Product Post Automation Workflow" width="600"/>
+</p>
 ## 🛠️ Purpose & Intention
 
 As HASKYN grew, manually crafting and publishing posts across multiple channels became time‑consuming and error prone. This workflow was created to:
 
-* **Save time** by automating repetitive publishing tasks.
-* **Ensure consistency** in brand voice and hashtags across platforms.
-* **Scale effortlessly** as our content needs expand.
-* **Enable non‑technical teams** to maintain an active social presence.
+***Save time** by automating repetitive publishing tasks.
+***Ensure consistency** in brand voice and hashtags across platforms.
+***Scale effortlessly** as our content needs expand.
+***Enable non‑technical teams** to maintain an active social presence.
 
 ---
 
@@ -60,7 +62,7 @@ By modeling this in n8n, Emily now hits **one button**, and her posts go live ev
 To integrate with your front‑end or CMS:
 
 1. **Expose the Webhook URL** from the n8n Webhook node.
-2. **Send a POST** with JSON payload:
+2. ****Send a POST**** with JSON payload:
 
    ```json
    {
@@ -71,7 +73,7 @@ To integrate with your front‑end or CMS:
    ```
 3. **Trigger** the workflow; the post will publish automatically.
 
-For custom front‑end hooks or authentication layers, wrap the POST call in your favorite framework (React, Vue, or plain JS).
+For custom front‑end hooks or authentication layers, wrap the POST call in your favorite framework (React, Vue, or plain JS)...
 
 ---
 
@@ -79,6 +81,5 @@ For custom front‑end hooks or authentication layers, wrap the POST call in you
 
 For questions, customizations, or integration help:
 
-* **Email**: [basalelr@gmail.com](mailto:basalelr@gmail.com
-)
+* **Email**: [basalelr@gmail.com](mailto:basalelr@gmail.com)
 

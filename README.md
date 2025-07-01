@@ -4,8 +4,9 @@ This n8n workflow automates cross‑platform social media publishing for HASKYN�
 
 ---
 <p align="center">
-  <img src="https://primary-production-2548.up.railway.app/wp-content/uploads/2025/07/n8n-blog.png" alt="Product Post Automation Workflow" width="600"/>
+  <img src="https://primary-production-2548.up.railway.app/wp-content/uploads/2025/07/product-post.png" alt="Product Post Automation Workflow" width="600"/>
 </p>
+
 ## 🛠️ Purpose & Intention
 ---
 As HASKYN grew, manually crafting and publishing posts across multiple channels became time‑consuming and error prone. This workflow was created to:
